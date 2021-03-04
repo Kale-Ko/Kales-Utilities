@@ -1,0 +1,49 @@
+prefix: "&6&l[Kales Utilities]"
+
+message-format: "%player%&r&7: %message%"
+default-message-color: "&7"
+
+scoreboard:
+    title: "&6&lKale Ko &7(%online%/%max%)"
+    values:
+        - "&7&m----------------------"
+        - "&e&lPlayer:"
+        - "  &f%player%"
+        - " "
+        - "&e&lOnline:"
+        - "  &f%online%/%max%"
+        - "  "
+        - "&e&lJoins:"
+        - "  &f%joins%"
+        - "&7&m----------------------"
+
+motd:
+    line1: "&6&lKale Ko"
+    line2: "&7https://kaleko.ga/"
+    centered: true
+
+forbiden-nicknames:
+    - "Kaylem Ko"
+    - "KaylemKo"
+    - "Kale Ko"
+    - "KaleKo"
+
+messages:
+    welcome-message: "Welcome to my server!"
+    join-message: "&e%player% &7joined the game"
+    setnickname: "Successfully set you nickname to %nickname%"
+    disallowed-name: "&cYou cannot use that nickname"
+    realname: "%nickname%'s real name is %name%"
+    resetname: "Successfully reset you nickname"
+    set-weather: "Successfully set the weather to %weather%"
+    not-a-weather: "That is not a type of weather"
+    set-time: "Successfully set the time to %time%"
+    not-a-time: "That is not a valid time"
+    sudo-command: "Successfully ran %command% as %player%"
+    sudo-message: "Successfully said %message% as %player%"
+    kick-message: "You were kicked for: %reason%"
+    ban-message: "You were banned for: %reason%"
+    banned-message: "You are banned for: %reason%"
+    reload: "&aReloading!"
+    not-a-command: "&cThat is not a valid command"
+    no-console: "&cOnly players can execute this command"

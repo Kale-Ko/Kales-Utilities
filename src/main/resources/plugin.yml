@@ -1,0 +1,90 @@
+main: com.kale_ko.kalesutilities.Main
+name: KalesUtilities
+version: 1.0.0
+author: Kale Ko
+
+api-version: 1.16
+
+commands:
+    KalesUtilities:
+        description: The main plugin commands
+        usage: /kalesutilities (help, reload)
+
+    Nickname:
+        description: Change your name
+        usage: /nickname {name}
+    Nick:
+        description: Change your name
+        usage: /nick {name}
+    Name:
+        description: Change your name
+        usage: /name {name}
+    Setname:
+        description: Change your name
+        usage: /setname {name}
+
+    Realname:
+        description: Get the realname of a nicked person
+        usage: /realname {nickname}
+    Getname:
+        description: Get the realname of a nicked person
+        usage: /getname {nickname}
+
+    ResetNickname:
+        description: reset your nickname
+        usage: /resetnickname
+    ResetName:
+        description: reset your nickname
+        usage: /resetname
+
+    Weather:
+        description: Lock the weather
+        usage: /weather (clear, rain)
+    SetWeather:
+        description: Lock the weather
+        usage: /setweather (clear, rain)
+
+    Time:
+        description: Lock the time
+        usage: /time (day, night, {time})
+    SetTime:
+        description: Lock the time
+        usage: /settime (day, night, {time})
+
+    Sudo:
+        description: Run a command or chat as someone else
+        usage: /runas (*, {player}) ({command}, {message})
+    RunCommandAs:
+        description: Run a command or chat as someone else
+        usage: /runas {player} ({command}, {message})
+    RunAs:
+        description: Run a command or chat as someone else
+        usage: /runas (*, {player}) ({command}, {message})
+
+    Kick:
+        description: Kicks a player
+        usage: /kick {player} {reason}
+
+    Ban:
+        description: Bans a player
+        usage: /ban {player} {reason}
+
+    TempBan:
+        description: Bans a player for a certain amount of time
+        usage: /kick {player} {time} (d, h, m) {reason}
+
+    UnBan:
+        description: Unbans a player
+        usage: /unban {player} {reason}
+
+    Mute:
+        description: Mutes a player
+        usage: /mute {player} {reason}
+
+    TempMute:
+        description: Mutes a player for a certain amount of time
+        usage: /mute {player} {time} (d, h, m) {reason}
+
+    UnMute:
+        description: Unmutes a player
+        usage: /unmute {player} {reason}
