@@ -1,0 +1,5 @@
+Example:
+    name: Example
+    joins: 0
+    banned: false
+    reason: ""
