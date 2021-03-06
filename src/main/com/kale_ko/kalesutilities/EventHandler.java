@@ -30,7 +30,10 @@ public class EventHandler implements Listener {
 
         plugin.playerData.set(player.getUniqueId() + ".name", player.getName());
 
-        if (plugin.playerData.getBoolean(player.getUniqueId() + ".banned")) player.kickPlayer(TextStyler.noPrefix(plugin.config.getString("messages.banned-message").replaceAll("%reason%", plugin.playerData.getString(player.getUniqueId() + ".reason")), plugin.config));
+        if (plugin.playerData.getBoolean(player.getUniqueId() + ".ban.banned")) {
+            player.kickPlayer(TextStyler.noPrefix(plugin.config.getString("messages.banned-message").replaceAll("%reason%", plugin.playerData.getString(player.getUniqueId() + ".ban.reason")), plugin.config));
+            return;
+        }
 
         plugin.playerData.set(player.getUniqueId() + ".joins", plugin.playerData.getInt(player.getUniqueId() + ".joins") + 1);
         plugin.playerConfig.saveConfig();
@@ -46,15 +49,26 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Task task = new Task(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+
+        Task task = new Task(player.getUniqueId());
         if (task.hasId()) task.stop();
 
-        if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".banned")) event.setQuitMessage("");
+        if (!plugin.playerData.getBoolean(player.getUniqueId() + ".ban.banned")) {
+            event.setQuitMessage(TextStyler.noPrefix(plugin.config.getString("messages.leave-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
+        } else {
+            event.setQuitMessage("");
+        }
     }
 
     @org.bukkit.event.EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
-        event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+        if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".mute.muted")) {
+           plugin.sendMessage(event.getPlayer(), TextStyler.noPrefix(plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")), plugin.config));
+            event.setCancelled(true);
+        } else {
+            event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+        }
     }
 
     @org.bukkit.event.EventHandler

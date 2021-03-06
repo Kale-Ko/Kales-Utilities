@@ -11,82 +11,77 @@ api-version: 1.16
 load: POSTWORLD
 
 commands:
-    kalesutilities:
+    KalesUtilities:
         description: "The main plugin commands"
         usage: "/kalesutilities (help, reload)"
 
-    nickname:
+    Nickname:
         description: "Change your name"
         usage: "/nickname {name}"
-        aliases: ["nick"]
+        aliases: ["Nick"]
 
-    realname:
+    RealName:
         description: "Get the realname of a nicked person"
         usage: "/realname {nickname}"
-        aliases: ["getname"]
+        aliases: ["GetName"]
 
-    resetnickname:
+    ResetNickname:
         description: "reset your nickname"
         usage: "/resetnickname"
-        aliases: ["resetname"]
+        aliases: ["ResetName"]
 
-    weather:
+    Weather:
         description: "Lock the weather"
         usage: "/weather (clear, rain)"
-        aliases: ["setweather"]
+        aliases: ["SetWeather"]
 
-    time:
+    Time:
         description: "Lock the time"
         usage: "/time (day, night, {time})"
-        aliases: ["settime"]
+        aliases: ["SetTime"]
 
-    sudo:
+    Sudo:
         description: "Run a command or chat as someone else"
         usage: "/runas (*, {player}) ({command}, {message})"
-        aliases: ["runcommandas", "runas"]
+        aliases: ["RunCommandAs", "RunAs"]
 
-    kick:
+    Kick:
         description: "Kicks a player"
         usage: "/kick {player} {reason}"
 
-    ban:
+    Ban:
         description: "Bans a player"
         usage: "/ban {player} {reason}"
 
-    tempban:
+    TempBan:
         description: "Bans a player for a certain amount of time"
         usage: "/kick {player} {time} (d, h, m) {reason}"
 
-    unban:
+    Unban:
         description: "Unbans a player"
         usage: "/unban {player} {reason}"
 
-    mute:
+    Mute:
         description: "Mutes a player"
         usage: "/mute {player} {reason}"
 
-    tempmute:
+    TempMute:
         description: "Mutes a player for a certain amount of time"
         usage: "/mute {player} {time} (d, h, m) {reason}"
 
-    unmute:
+    Unmute:
         description: "Unmutes a player"
         usage: "/unmute {player} {reason}"
 
-    lagclear:
+    LagClear:
         description: "Kills all items, tnt, ect"
         usage: "/lagclear"
-        aliases: ["clearlag"]
+        aliases: ["ClearLag"]
 
-    killall:
+    KillAll:
         description: "Kills all the mobs"
         usage: "/killall"
-        aliases: ["butcher"]
-
-    message:
-        description: "Private message someone"
-        usage: "/message {player} {message}"
-        aliases: ["msg"]
+        aliases: ["Butcher"]
 
 permissions:
     kalesutilities:
