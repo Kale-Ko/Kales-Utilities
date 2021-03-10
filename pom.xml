@@ -38,7 +38,8 @@
                 <directory>${project.basedir}/src/main/com/kale_ko/kalesutilities</directory>
                 <includes>
                     <include>Main.java</include>
-                    <include>EventHandeler.java</include>
+                    <include>EventHandler.java</include>
+                    <include>CommandRegister.java</include>
                 </includes>
             </resource>
             <resource>
@@ -56,6 +57,7 @@
                     <include>plugin.yml</include>
                     <include>config.yml</include>
                     <include>players.yml</include>
+                    <include>data.yml</include>
                 </includes>
             </resource>
         </resources>

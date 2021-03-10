@@ -3,10 +3,7 @@ package com.kale_ko.kalesutilities;
 import com.kale_ko.api.spigot.AutoCompleter;
 import com.kale_ko.api.spigot.DataManager;
 import com.kale_ko.api.spigot.TextStyler;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -14,13 +11,15 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation" })
 public class CommandRegister {
     public Main plugin;
 
     public FileConfiguration config;
     public DataManager playerConfig;
     public FileConfiguration playerData;
+    public DataManager serverConfig;
+    public FileConfiguration serverData;
 
     public long time = 6000;
     public WeatherType weather = WeatherType.CLEAR;
@@ -33,6 +32,8 @@ public class CommandRegister {
         config = plugin.config;
         playerConfig = plugin.playerConfig;
         playerData = plugin.playerData;
+        serverConfig = plugin.serverConfig;
+        serverData = plugin.serverData;
 
         if (label.equalsIgnoreCase("kalesutilities")) {
             if (args.length > 0) {
@@ -56,10 +57,13 @@ public class CommandRegister {
 
                     plugin.reloadConfig();
                     playerConfig.reloadConfig();
+                    serverConfig.reloadConfig();
                     plugin.config = plugin.getConfig();
                     config = plugin.config;
                     plugin.playerData = playerConfig.getConfig();
                     playerData = plugin.playerData;
+                    plugin.serverData = serverConfig.getConfig();
+                    serverData = plugin.serverData;
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         player.setDisplayName(playerData.getString(player.getUniqueId() + ".nickname"));
@@ -294,6 +298,34 @@ public class CommandRegister {
             playerConfig.saveConfig();
 
             return true;
+        } else if (label.equalsIgnoreCase("mutechat")) {
+            if (!checkPermission(sender, "admin.mutechat")) return true;
+
+            if (!serverData.getBoolean("chatmuted")) {
+                serverData.set("chatmuted", true);
+                serverConfig.saveConfig();
+
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+
+                    sendMessage(sender, config.getString("messages.mute-chat").replaceAll("%player%",  player.getDisplayName()));
+                } else {
+                    sendMessage(sender, config.getString("messages.mute-chat").replaceAll("%player%",  "console"));
+                }
+            } else {
+                serverData.set("chatmuted", false);
+                serverConfig.saveConfig();
+
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+
+                    sendMessage(sender, config.getString("messages.unmute-chat").replaceAll("%player%",  player.getDisplayName()));
+                } else {
+                    sendMessage(sender, config.getString("messages.unmute-chat").replaceAll("%player%",  "console"));
+                }
+            }
+
+            return true;
         } else if (label.equalsIgnoreCase("lagclear") || label.equalsIgnoreCase("clearlag")) {
             if (!checkPermission(sender, "lagclear")) return true;
 
@@ -329,6 +361,49 @@ public class CommandRegister {
             Bukkit.getPlayer(args[0]).sendMessage(TextStyler.noPrefix(config.getString("messages.dirrectmessage").replaceAll("%player%", player.getDisplayName()).replaceAll("%message%", message.toString()), config));
 
             return true;
+        } else if (label.equalsIgnoreCase("setworldspawn") || label.equalsIgnoreCase("setspawn")) {
+            if (args[0].equalsIgnoreCase("here")) {
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+
+                    serverData.set("spawnLocation.world", player.getLocation().getWorld().getName());
+                    serverData.set("spawnLocation.x", player.getLocation().getX());
+                    serverData.set("spawnLocation.y", player.getLocation().getY());
+                    serverData.set("spawnLocation.z", player.getLocation().getZ());
+                    serverData.set("spawnLocation.rotation", player.getLocation().getYaw());
+                    serverConfig.saveConfig();
+                } else {
+                    sendMessage(sender, config.getString("messages.setspawn.noconsole"));
+                }
+            } else {
+                if (!args[0].equalsIgnoreCase("~")) serverData.set("spawnLocation.world", args[0]);
+                if (!args[1].equalsIgnoreCase("~")) serverData.set("spawnLocation.x", Double.valueOf(args[1]));
+                if (!args[2].equalsIgnoreCase("~")) serverData.set("spawnLocation.y", Double.valueOf(args[2]));
+                if (!args[3].equalsIgnoreCase("~")) serverData.set("spawnLocation.z", Double.valueOf(args[3]));
+                if (!args[4].equalsIgnoreCase("~")) serverData.set("spawnLocation.rotation", Double.valueOf(args[4]));
+                serverConfig.saveConfig();
+
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+
+                    if (args[0].equalsIgnoreCase("~")) serverData.set("spawnLocation.world", player.getLocation().getWorld().getName());
+                    if (args[1].equalsIgnoreCase("~")) serverData.set("spawnLocation.x", player.getLocation().getX());
+                    if (args[2].equalsIgnoreCase("~")) serverData.set("spawnLocation.y", player.getLocation().getY());
+                    if (args[3].equalsIgnoreCase("~")) serverData.set("spawnLocation.z", player.getLocation().getZ());
+                    if (args[4].equalsIgnoreCase("~")) serverData.set("spawnLocation.rotation", player.getLocation().getYaw());
+                    serverConfig.saveConfig();
+                } else {
+                    if (args[0].equalsIgnoreCase("~") || args[1].equalsIgnoreCase("~") || args[2].equalsIgnoreCase("~") || args[3].equalsIgnoreCase("~") || args[4].equalsIgnoreCase("~")) sendMessage(sender, config.getString("messages.setspawn.noconsole"));
+                }
+            }
+
+            return true;
+        } else if (label.equalsIgnoreCase("spawn")) {
+            if (!checkConsole(sender)) return true;
+
+            Player player = (Player) sender;
+
+            player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
         }
 
         return false;
