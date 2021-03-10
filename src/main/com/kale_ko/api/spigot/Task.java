@@ -1,16 +1,14 @@
 package com.kale_ko.api.spigot;
 
+import org.bukkit.Bukkit;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-
 public class Task {
     private static final Map<UUID, Integer> TASKS = new HashMap<>();
     private final UUID uuid;
-
-    public int run = 1;
 
     public Task(UUID uuid) {
         this.uuid = uuid;

@@ -53,10 +53,6 @@ commands:
         description: "Bans a player"
         usage: "/ban {player} {reason}"
 
-    tempban:
-        description: "Bans a player for a certain amount of time"
-        usage: "/kick {player} {time} (d, h, m) {reason}"
-
     unban:
         description: "Unbans a player"
         usage: "/unban {player} {reason}"
@@ -64,10 +60,6 @@ commands:
     mute:
         description: "Mutes a player"
         usage: "/mute {player} {reason}"
-
-    tempmute:
-        description: "Mutes a player for a certain amount of time"
-        usage: "/mute {player} {time} (d, h, m) {reason}"
 
     unmute:
         description: "Unmutes a player"
@@ -112,6 +104,7 @@ permissions:
 
     kalesutilities.help:
         description: "Allows you to use the /kalesutilities help command"
+
     kalesutilities.reload:
         description: "Allows you to use the /kalesutilities reload command"
 
@@ -139,25 +132,22 @@ permissions:
     kalesutilites.setspawn:
         description: "Set the spawnpoint when someone joins the game"
 
-
     kalesutilities.admin:
         description: "Allows you to use all the admin commands"
         children:
             kalesutilities.admin.kick: true
             kalesutilities.admin.ban: true
-            kalesutilities.admin.tempban: true
             kalesutilities.admin.mute: true
-            kalesutilities.admin.tempmute: true
             kaleutilities.admin.mutechat: true
+
     kalesutilities.admin.kick:
         description: "Allows you to use the /kick command"
+
     kalesutilities.admin.ban:
         description: "Allows you to use the /ban command"
-    kalesutilities.admin.tempban:
-        description: "Allows you to use the /tempban command"
+
     kalesutilities.admin.mute:
         description: "Allows you to use the /mute command"
-    kalesutilities.admin.tempmute:
-        description: "Allows you to use the /tempmute command"
+
     kaleutilities.admin.mutechat:
         description: "Allows you to mute the chat"

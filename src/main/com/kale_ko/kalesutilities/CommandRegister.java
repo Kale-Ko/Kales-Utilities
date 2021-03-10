@@ -9,12 +9,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({ "deprecation" })
 public class CommandRegister {
     public Main plugin;
-
     public FileConfiguration config;
     public DataManager playerConfig;
     public FileConfiguration playerData;
@@ -26,6 +26,10 @@ public class CommandRegister {
 
     public CommandRegister(Main plugin) {
         this.plugin = plugin;
+        this.playerConfig = plugin.playerConfig;
+        this.playerData = plugin.playerData;
+        this.serverConfig = plugin.serverConfig;
+        this.serverData = plugin.serverData;
     }
 
     public Boolean execute(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
@@ -88,7 +92,9 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("nickname") || label.equalsIgnoreCase("nick")) {
-            if (!checkConsole(sender) || !checkPermission(sender, "nickname")) return true;
+            String[] neededArgs = new String[1];
+            neededArgs[0] = "name";
+            if (!checkConsole(sender) || !checkPermission(sender, "nickname") || !checkForParameters(sender, neededArgs, args)) return true;
 
             Player player = (Player) sender;
 
@@ -100,7 +106,9 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("realname") || label.equalsIgnoreCase("getname")) {
-            if (!checkPermission(sender, "nickname")) return true;
+            String[] neededArgs = new String[1];
+            neededArgs[0] = "nickname";
+            if (!checkPermission(sender, "nickname") || !checkForParameters(sender, neededArgs, args)) return true;
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getDisplayName().contains(args[0])) sendMessage(sender, config.getString("messages.realname").replaceAll("%nickname%", player.getDisplayName()).replaceAll("%name%", player.getName()));
@@ -120,7 +128,9 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("weather") || label.equalsIgnoreCase("setweather")) {
-            if (!checkPermission(sender, "weather")) return true;
+            String[] neededArgs = new String[1];
+            neededArgs[0] = "weather";
+            if (!checkPermission(sender, "weather") || !checkForParameters(sender, neededArgs, args)) return true;
 
             if (args[0].equalsIgnoreCase("clear")) {
                 weather = WeatherType.CLEAR;
@@ -136,7 +146,9 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("time") || label.equalsIgnoreCase("settime")) {
-            if (!checkPermission(sender, "time")) return true;
+            String[] neededArgs = new String[1];
+            neededArgs[0] = "time";
+            if (!checkPermission(sender, "time") || !checkForParameters(sender, neededArgs, args)) return true;
 
             if (args[0].equalsIgnoreCase("day")) {
                 time = 6000;
@@ -158,7 +170,10 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("sudo") || label.equalsIgnoreCase("runcommandas") || label.equalsIgnoreCase("runas")) {
-            if (!checkPermission(sender, "sudo")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "command/message";
+            if (!checkPermission(sender, "sudo") || !checkForParameters(sender, neededArgs, args)) return true;
 
             if (args[1].startsWith("/")) {
                 StringBuilder sudocommand = new StringBuilder();
@@ -202,7 +217,10 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("kick")) {
-            if (!checkPermission(sender, "admin.kick")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "reason";
+            if (!checkPermission(sender, "admin.kick") || !checkForParameters(sender, neededArgs, args)) return true;
 
             StringBuilder reason = new StringBuilder();
 
@@ -217,7 +235,10 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("mute")) {
-            if (!checkPermission(sender, "admin.mute")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "reason";
+            if (!checkPermission(sender, "admin.mute") || !checkForParameters(sender, neededArgs, args)) return true;
 
             Player player = Bukkit.getPlayer(args[0]);
 
@@ -238,11 +259,14 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("unmute")) {
-            if (!checkPermission(sender, "admin.mute")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "reason";
+            if (!checkPermission(sender, "admin.mute") || !checkForParameters(sender, neededArgs, args)) return true;
 
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
-            @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder") StringBuilder reason = new StringBuilder();
+            StringBuilder reason = new StringBuilder();
 
             int index = 0;
             for (String string : args) {
@@ -259,7 +283,10 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("ban")) {
-            if (!checkPermission(sender, "admin.ban")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "reason";
+            if (!checkPermission(sender, "admin.ban") || !checkForParameters(sender, neededArgs, args)) return true;
 
             Player player = Bukkit.getPlayer(args[0]);
 
@@ -280,18 +307,21 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("unban")) {
-            if (!checkPermission(sender, "admin.ban")) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "reason";
+            if (!checkPermission(sender, "admin.ban") || !checkForParameters(sender, neededArgs, args)) return true;
 
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
-            @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder") StringBuilder reason = new StringBuilder();
+            /*StringBuilder reason = new StringBuilder();
 
             int index = 0;
             for (String string : args) {
                 if (index != 0) reason.append(string).append(" ");
 
                 index++;
-            }
+            }*/
 
             playerData.set(player.getUniqueId() + ".ban.banned", false);
             playerData.set(player.getUniqueId() + ".ban.reason", "");
@@ -327,25 +357,50 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("lagclear") || label.equalsIgnoreCase("clearlag")) {
-            if (!checkPermission(sender, "lagclear")) return true;
+            if (!checkConsole(sender) || !checkPermission(sender, "lagclear")) return true;
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=minecraft:item]");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=minecraft:tnt]");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=minecraft:experience_orb]");
+            Player player = (Player) sender;
+
+            String previos = player.getWorld().getGameRuleValue("sendCommandFeedback");
+            player.getWorld().setGameRuleValue("sendCommandFeedback","false");
+
+            String[] theArgs = new String[2];
+            theArgs[0] = sender.getName();
+            theArgs[1] = "/execute as @e[type=minecraft:item,limit=1] kill @e[type=minecraft:item]";
+            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
+            theArgs[1] = "/execute as @e[type=minecraft:tnt,limit=1] run kill @e[type=minecraft:tnt]";
+            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
+            theArgs[1] = "/execute as @e[type=minecraft:experience_orb,limit=1] run kill @e[type=minecraft:experience_orb]";
+            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
+
+            player.getWorld().setGameRuleValue("sendCommandFeedback", previos);
 
             sendMessage(sender, config.getString("messages.lagclear"));
 
             return true;
         } else if (label.equalsIgnoreCase("killall") || label.equalsIgnoreCase("butcher")) {
-            if (!checkPermission(sender, "lagclear")) return true;
+            if (!checkConsole(sender) || !checkPermission(sender, "lagclear")) return true;
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=!minecraft:player]");
+            Player player = (Player) sender;
+
+            String previos = player.getWorld().getGameRuleValue("sendCommandFeedback");
+            player.getWorld().setGameRuleValue("sendCommandFeedback","false");
+
+            String[] theArgs = new String[2];
+            theArgs[0] = sender.getName();
+            theArgs[1] = "/execute as @e[type=!minecraft:player,limit=1] run kill @e[type=!minecraft:player]";
+            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
+
+            player.getWorld().setGameRuleValue("sendCommandFeedback", previos);
 
             sendMessage(sender, config.getString("messages.killall"));
 
             return true;
         } else if (label.equalsIgnoreCase("message") || label.equalsIgnoreCase("msg")) {
-            if (!checkConsole(sender)) return true;
+            String[] neededArgs = new String[2];
+            neededArgs[0] = "player";
+            neededArgs[1] = "message";
+            if (!checkConsole(sender) || !checkForParameters(sender, neededArgs, args)) return true;
 
             Player player = (Player) sender;
 
@@ -362,6 +417,10 @@ public class CommandRegister {
 
             return true;
         } else if (label.equalsIgnoreCase("setworldspawn") || label.equalsIgnoreCase("setspawn")) {
+            String[] neededArgs = new String[1];
+            neededArgs[0] = "location";
+            if (!checkForParameters(sender, neededArgs, args)) return true;
+
             if (args[0].equalsIgnoreCase("here")) {
                 if (sender instanceof Player) {
                     Player player = (Player) sender;
@@ -442,11 +501,22 @@ public class CommandRegister {
         plugin.getCommand("time").setTabCompleter(new AutoCompleter(subcommands));
     }
 
+    public Boolean checkForParameters(CommandSender sender, String[] neededArgs, String[] args) {
+        if (neededArgs.length < args.length) {
+            sendMessage(sender, config.getString("messages.need-parameters").replaceAll("%amount%", Integer.toString(neededArgs.length)).replaceAll("%parameters%", Arrays.toString(neededArgs)));
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public Boolean checkPermission(CommandSender sender, String permission) {
         if (sender.hasPermission("kalesutilities." + permission)) {
             return true;
         } else {
-            sender.sendMessage(config.getString("messages.nopermission").replaceAll("%permission%", permission));
+            sendMessage(sender, config.getString("messages.nopermission").replaceAll("%permission%", permission));
+
             return false;
         }
     }

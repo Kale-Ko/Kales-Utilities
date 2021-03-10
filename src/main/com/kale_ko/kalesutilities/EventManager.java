@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,16 +19,16 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 @SuppressWarnings({ "deprecation" })
-public class EventHandler implements Listener {
-    Main plugin;
+public class EventManager implements Listener {
+    private final Main plugin;
 
     private int taskId;
 
-    public EventHandler(Main plugin) {
+    public EventManager(Main plugin) {
         this.plugin = plugin;
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
@@ -43,32 +44,34 @@ public class EventHandler implements Listener {
 
         if ((plugin.playerData.getString(player.getUniqueId() + ".nickname") != null)) player.setDisplayName(plugin.playerData.getString(player.getUniqueId() + ".nickname"));
 
-        startTask(player);
+        if (plugin.config.getBoolean("scoreboard.enabled")) startTask(player);
 
-        player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
+        if (plugin.config.getBoolean("spawn-enabled")) player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
 
-        player.setAllowFlight(true);
+        if (plugin.config.getBoolean("double-jump.enabled")) player.setAllowFlight(true);
 
-        event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
+        if (plugin.config.getBoolean("custom-join-leave-messages")) event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
 
-        plugin.sendMessage(player, TextStyler.noPrefix(plugin.config.getString("messages.welcome-message"), plugin.config));
+        if (plugin.config.getBoolean("welcome-message-enabled")) plugin.sendMessage(player, TextStyler.noPrefix(plugin.config.getString("messages.welcome-message"), plugin.config));
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        Task task = new Task(player.getUniqueId());
-        if (task.hasId()) task.stop();
+        if (plugin.config.getBoolean("scoreboard.enabled")) {
+            Task task = new Task(player.getUniqueId());
+            if (task.hasId()) task.stop();
+        }
 
         if (!plugin.playerData.getBoolean(player.getUniqueId() + ".ban.banned")) {
-            event.setQuitMessage(TextStyler.noPrefix(plugin.config.getString("messages.leave-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
+            if (plugin.config.getBoolean("custom-join-leave-messages")) event.setQuitMessage(TextStyler.noPrefix(plugin.config.getString("messages.leave-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
         } else {
             event.setQuitMessage("");
         }
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         if (!plugin.serverData.getBoolean("chatmuted")) {
             if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".mute.muted")) {
@@ -78,21 +81,19 @@ public class EventHandler implements Listener {
                 event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
             }
         } else {
-            if (!plugin.commandRegister.checkPermission(event.getPlayer(), "kalesutilities.help")) return;
+            if (!plugin.commandRegister.checkPermission(event.getPlayer(), "admin.mutechat")) return;
 
             plugin.sendMessage(event.getPlayer(), plugin.config.getString("messages.chatmuted"));
             event.setCancelled(true);
         }
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onServerping(ServerListPingEvent event) {
         StringBuilder line1 = new StringBuilder(plugin.config.getString("motd.line1"));
         StringBuilder line2 = new StringBuilder(plugin.config.getString("motd.line2"));
 
         if (plugin.config.getBoolean("motd.centered")) {
-            plugin.log(TextStyler.removeColorCodes(line1.toString()));
-            plugin.log(TextStyler.removeColorCodes(line2.toString()));
             for (int i = 0; i < (68 - TextStyler.removeColorCodes(line1.toString()).length()) / 2; i++) {
                 line1.insert(0, " ");
             }
@@ -107,12 +108,12 @@ public class EventHandler implements Listener {
         //event.setServerIcon(icon);
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerToggleFlight(PlayerToggleFlightEvent event) {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE || event.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
 
         event.setCancelled(true);
-        event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply (plugin.config.getDouble("double-jump.velocity-multiplyer")).setY(plugin.config.getDouble("double-jump.y-velocity")));
+        event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply (plugin.config.getDouble("double-jump.velocity-multiplayer")).setY(plugin.config.getDouble("double-jump.y-velocity")));
     }
 
     public void startTask(Player player) {
@@ -121,28 +122,24 @@ public class EventHandler implements Listener {
 
             @Override
             public void run() {
-                if (!task.hasId())
-                    task.setId(taskId);
+                if (!task.hasId()) task.setId(taskId);
 
-                createScoreBoard(player, task);
-
-                task.run++;
+                if (plugin.config.getBoolean("scoreboard.enabled")) createScoreBoard(player);
             }
         }, 0, 20);
     }
 
-    public void createScoreBoard(Player player, Task task) {
+    public void createScoreBoard(Player player) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         org.bukkit.scoreboard.Scoreboard board = manager.getNewScoreboard();
 
-        Objective objective = board.registerNewObjective("customboard" + task.run, "dummy");
+        Objective objective = board.registerNewObjective("customboard" + player.getName(), "dummy");
 
         objective.setDisplayName(TextStyler.noPrefix(plugin.config.getString("scoreboard.title"), plugin.config));
 
         int index = 0;
         for (String line : plugin.config.getStringList("scoreboard.values")) {
-            Score newline = objective.getScore(TextStyler
-                    .noPrefix(TextStyler.replacePlaceholders(line, player, plugin.playerData), plugin.config));
+            Score newline = objective.getScore(TextStyler.noPrefix(TextStyler.replacePlaceholders(line, player, plugin.playerData), plugin.config));
             newline.setScore(plugin.config.getStringList("scoreboard.values").size() - index);
             index++;
 
