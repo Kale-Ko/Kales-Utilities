@@ -1,14 +1,13 @@
 package com.kale_ko.api.spigot;
 
+import com.kale_ko.kalesutilities.Main;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import com.kale_ko.kalesutilities.Main;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class DataManager {
     private final String filename;
@@ -20,7 +19,7 @@ public class DataManager {
         this.filename = filename;
         this.plugin = plugin;
 
-        saveDefaultConfig();
+        this.saveDefaultConfig();
     }
 
     public void reloadConfig() {
@@ -37,7 +36,7 @@ public class DataManager {
 
     public FileConfiguration getConfig() {
         if (this.dataConfig == null) {
-            reloadConfig();
+            this.reloadConfig();
         }
 
         return this.dataConfig;
@@ -55,11 +54,8 @@ public class DataManager {
     }
 
     public void saveDefaultConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), filename);
+        if (this.configFile == null) this.configFile = new File(this.plugin.getDataFolder(), filename);
 
-        if (!this.configFile.exists()) {
-            this.plugin.saveResource(filename, false);
-        }
+        if (!this.configFile.exists()) this.plugin.saveResource(filename, false);
     }
 }

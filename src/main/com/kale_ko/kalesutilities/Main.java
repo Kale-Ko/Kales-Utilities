@@ -7,27 +7,27 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
-    public CommandRegister commandRegister = new CommandRegister(this);
-
-    public FileConfiguration config = this.getConfig();
-
+    public FileConfiguration config;
     public DataManager playerConfig = new DataManager("players.yml", this);
-    public FileConfiguration playerData = playerConfig.getConfig();
-
+    public FileConfiguration playerData;
     public DataManager serverConfig = new DataManager("data.yml", this);
-    public FileConfiguration serverData = serverConfig.getConfig();
+    public FileConfiguration serverData;
+
+    public CommandRegister commandRegister = new CommandRegister(this);
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
-        saveConfig();
+        this.saveConfig();
         config = this.getConfig();
+        playerData = playerConfig.getConfig();
+        serverData = serverConfig.getConfig();
 
         commandRegister.registerCommands();
         commandRegister.registerTickEvent();
 
-        this.getServer().getPluginManager().registerEvents(new EventHandler(this), this);
+        this.getServer().getPluginManager().registerEvents(new EventManager(this), this);
 
         log("Enabled");
     }

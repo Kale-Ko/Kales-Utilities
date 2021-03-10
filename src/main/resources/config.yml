@@ -3,7 +3,11 @@ prefix: "&6&l[Kales Utilities]"
 message-format: "%player%&r&7: %message%"
 default-message-color: "&7"
 
+custom-join-leave-messages: true
+welcome-message-enabled: true
+
 scoreboard:
+    enabled: true
     title: "&6&lKale Ko &7(%online%/%max%)"
     values:
         - "&7&m----------------------"
@@ -18,13 +22,17 @@ scoreboard:
         - "&7&m----------------------"
 
 motd:
+    enabled: true
     line1: "&6&lKale Ko"
     line2: "&7https://kaleko.ga/"
     centered: true
 
+spawn-enabled: true
+
 double-jump:
-    velocity-multiplyer: 2.5
-    y-velocity: 0.6
+    enabled: true
+    velocity-multiplayer: 2
+    y-velocity: 1
 
 messages:
     welcome-message: "Welcome to my server!"
@@ -53,5 +61,6 @@ messages:
     unmute-chat: "The chat has been unmuted by %player%"
     reload: "&aReloading!"
     not-a-command: "&cThat is not a valid command"
+    need-parameters: "&cYou need to provide %amount% of parameters. %parameters%"
     nopermission: "You need the permission %permission% to execute that command"
     no-console: "&cOnly players can execute this command"
