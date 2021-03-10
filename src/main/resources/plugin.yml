@@ -73,6 +73,10 @@ commands:
         description: "Unmutes a player"
         usage: "/unmute {player} {reason}"
 
+    mutechat:
+        description: "Mutes the chat"
+        usage: "/mutechat"
+
     lagclear:
         description: "Kills all items, tnt, ect"
         usage: "/lagclear"
@@ -88,6 +92,11 @@ commands:
         usage: "/message {player} {message}"
         aliases: ["msg"]
 
+    setworldspawn:
+        description: "Set the spawnpoint when someone joins the game"
+        usage: "/setworldspawn (~, {world}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation})"
+        aliases: ["setspawn"]
+
 permissions:
     kalesutilities:
         description: "Allows you to use all the commands"
@@ -99,6 +108,7 @@ permissions:
             kalesutilities.time: true
             kalesutilities.sudo: true
             kalesutilites.killall: true
+            kalesutilites.setspawn: true
 
     kalesutilities.help:
         description: "Allows you to use the /kalesutilities help command"
@@ -126,6 +136,9 @@ permissions:
     kalesutilites.lagclear:
         description: "Allows you to use the /lagclear command"
 
+    kalesutilites.setspawn:
+        description: "Set the spawnpoint when someone joins the game"
+
 
     kalesutilities.admin:
         description: "Allows you to use all the admin commands"
@@ -135,6 +148,7 @@ permissions:
             kalesutilities.admin.tempban: true
             kalesutilities.admin.mute: true
             kalesutilities.admin.tempmute: true
+            kaleutilities.admin.mutechat: true
     kalesutilities.admin.kick:
         description: "Allows you to use the /kick command"
     kalesutilities.admin.ban:
@@ -145,3 +159,5 @@ permissions:
         description: "Allows you to use the /mute command"
     kalesutilities.admin.tempmute:
         description: "Allows you to use the /tempmute command"
+    kaleutilities.admin.mutechat:
+        description: "Allows you to mute the chat"

@@ -10,8 +10,12 @@ public class Main extends JavaPlugin {
     public CommandRegister commandRegister = new CommandRegister(this);
 
     public FileConfiguration config = this.getConfig();
+
     public DataManager playerConfig = new DataManager("players.yml", this);
     public FileConfiguration playerData = playerConfig.getConfig();
+
+    public DataManager serverConfig = new DataManager("data.yml", this);
+    public FileConfiguration serverData = serverConfig.getConfig();
 
     @Override
     public void onEnable() {
@@ -34,6 +38,7 @@ public class Main extends JavaPlugin {
 
         saveConfig();
         playerConfig.saveConfig();
+        serverConfig.saveConfig();
 
         log("Disabled");
     }

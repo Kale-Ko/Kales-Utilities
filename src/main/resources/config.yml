@@ -22,6 +22,10 @@ motd:
     line2: "&7https://kaleko.ga/"
     centered: true
 
+double-jump:
+    velocity-multiplyer: 2.5
+    y-velocity: 0.6
+
 messages:
     welcome-message: "Welcome to my server!"
     join-message: "&e%player% &7joined the game"
@@ -44,6 +48,9 @@ messages:
     unmute-message: "You were unmuted for: %reason%"
     ban-message: "You were banned for: %reason%"
     banned-message: "You are banned for: %reason%"
+    chatmuted: "&cThe chat is currently muted"
+    mute-chat: "The chat has been muted by %player%"
+    unmute-chat: "The chat has been unmuted by %player%"
     reload: "&aReloading!"
     not-a-command: "&cThat is not a valid command"
     nopermission: "You need the permission %permission% to execute that command"

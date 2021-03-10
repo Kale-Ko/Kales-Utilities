@@ -1,13 +1,16 @@
 package com.kale_ko.kalesutilities;
 
-import com.kale_ko.api.spigot.*;
-
+import com.kale_ko.api.spigot.Task;
+import com.kale_ko.api.spigot.TextStyler;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -42,6 +45,10 @@ public class EventHandler implements Listener {
 
         startTask(player);
 
+        player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
+
+        player.setAllowFlight(true);
+
         event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
 
         plugin.sendMessage(player, TextStyler.noPrefix(plugin.config.getString("messages.welcome-message"), plugin.config));
@@ -63,11 +70,18 @@ public class EventHandler implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
-        if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".mute.muted")) {
-           plugin.sendMessage(event.getPlayer(), TextStyler.noPrefix(plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")), plugin.config));
-            event.setCancelled(true);
+        if (!plugin.serverData.getBoolean("chatmuted")) {
+            if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".mute.muted")) {
+                plugin.sendMessage(event.getPlayer(), plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")));
+                event.setCancelled(true);
+            } else {
+                event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+            }
         } else {
-            event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+            if (!plugin.commandRegister.checkPermission(event.getPlayer(), "kalesutilities.help")) return;
+
+            plugin.sendMessage(event.getPlayer(), plugin.config.getString("messages.chatmuted"));
+            event.setCancelled(true);
         }
     }
 
@@ -90,8 +104,15 @@ public class EventHandler implements Listener {
 
         event.setMotd(TextStyler.noExtra(line1.toString() + "\n&r" + line2.toString()));
 
-        // event.setServerIcon(icon);
-        // event.setMaxPlayers(maxPlayers);
+        //event.setServerIcon(icon);
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onPlayerToggleFlight(PlayerToggleFlightEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE || event.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
+
+        event.setCancelled(true);
+        event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply (plugin.config.getDouble("double-jump.velocity-multiplyer")).setY(plugin.config.getDouble("double-jump.y-velocity")));
     }
 
     public void startTask(Player player) {
