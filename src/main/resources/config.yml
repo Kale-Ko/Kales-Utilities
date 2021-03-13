@@ -6,7 +6,7 @@ default-message-color: "&7"
 custom-join-leave-messages: true
 welcome-message-enabled: true
 
-#global-plugin-directory: ""
+global-plugin-directory: ""
 
 scoreboard:
     enabled: true

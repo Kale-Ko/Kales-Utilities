@@ -161,7 +161,7 @@ public class CommandRegister {
     }
 
     public Boolean checkForParameters(CommandSender sender, String[] neededArgs, String[] args) {
-        if (neededArgs.length < args.length) {
+        if (args.length < neededArgs.length) {
             sendMessage(sender, config.getString("messages.need-parameters").replaceAll("%amount%", Integer.toString(neededArgs.length)).replaceAll("%parameters%", Arrays.toString(neededArgs)));
 
             return false;
@@ -191,6 +191,6 @@ public class CommandRegister {
     }
 
     public void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(TextStyler.style(message, config));
+        sender.sendMessage(TextStyler.style(message, plugin.config));
     }
 }

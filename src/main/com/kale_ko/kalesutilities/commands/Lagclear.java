@@ -24,7 +24,7 @@ public class Lagclear {
 
         String[] theArgs = new String[2];
         theArgs[0] = sender.getName();
-        theArgs[1] = "/execute as @e[type=minecraft:item,limit=1] kill @e[type=minecraft:item]";
+        theArgs[1] = "/execute as @e[type=minecraft:item,limit=1] run kill @e[type=minecraft:item]";
         plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
         theArgs[1] = "/execute as @e[type=minecraft:tnt,limit=1] run kill @e[type=minecraft:tnt]";
         plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);

@@ -94,3 +94,7 @@ commands:
         description: "Set the spawnpoint when someone joins the game"
         usage: "/setworldspawn (~, {world}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation})"
         aliases: ["setspawn"]
+
+    spawn:
+        description: "Goto the spawn"
+        usage: "/spawn"
