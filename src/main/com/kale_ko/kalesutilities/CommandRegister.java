@@ -1,18 +1,20 @@
 package com.kale_ko.kalesutilities;
 
-import com.kale_ko.api.spigot.AutoCompleter;
 import com.kale_ko.api.spigot.DataManager;
 import com.kale_ko.api.spigot.TextStyler;
+import com.kale_ko.kalesutilities.commands.*;
 import org.bukkit.*;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-@SuppressWarnings({ "deprecation" })
 public class CommandRegister {
     public Main plugin;
     public FileConfiguration config;
@@ -26,13 +28,14 @@ public class CommandRegister {
 
     public CommandRegister(Main plugin) {
         this.plugin = plugin;
+        this.config = plugin.config;
         this.playerConfig = plugin.playerConfig;
         this.playerData = plugin.playerData;
         this.serverConfig = plugin.serverConfig;
         this.serverData = plugin.serverData;
     }
 
-    public Boolean execute(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+    public Boolean execute(CommandSender sender, Command command, String label, String[] args) {
         config = plugin.config;
         playerConfig = plugin.playerConfig;
         playerData = plugin.playerData;
@@ -40,429 +43,43 @@ public class CommandRegister {
         serverData = plugin.serverData;
 
         if (label.equalsIgnoreCase("kalesutilities")) {
-            if (args.length > 0) {
-                if (args[0].equalsIgnoreCase("help")) {
-                    if (!checkPermission(sender, "help")) return true;
-
-                    sendMessage(sender, "Type /kalesutilities help for this");
-                    sendMessage(sender, "Type /kalesutilities reload to reload the config");
-                    sendMessage(sender, "Type /nickname {nickname} to change your name");
-                    sendMessage(sender, "Type /realname {nickname} to get the realname of a nicked person");
-                    sendMessage(sender, "Type /resetnickname to reset your nickname");
-                    sendMessage(sender, "Type /weather (clear, rain) to lock the weather");
-                    sendMessage(sender, "Type /time (day, night, {time}) to lock the time");
-                    sendMessage(sender, "Type /sudo {player} {command} to run a command or chat as someone else");
-                    sendMessage(sender, "Type /lagclear to kill all the items, tnt, ect");
-                    sendMessage(sender, "Type /killall to kill all the mobs");
-                } else if (args[0].equalsIgnoreCase("reload")) {
-                    if (!checkPermission(sender, "reload")) return true;
-
-                    sendMessage(sender, config.getString("messages.reload"));
-
-                    plugin.reloadConfig();
-                    playerConfig.reloadConfig();
-                    serverConfig.reloadConfig();
-                    plugin.config = plugin.getConfig();
-                    config = plugin.config;
-                    plugin.playerData = playerConfig.getConfig();
-                    playerData = plugin.playerData;
-                    plugin.serverData = serverConfig.getConfig();
-                    serverData = plugin.serverData;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.setDisplayName(playerData.getString(player.getUniqueId() + ".nickname"));
-                    }
-                } else {
-                    sendMessage(sender, config.getString("messages.not-a-command"));
-                }
-            } else {
-                if (!checkPermission(sender, "kalesutilities.help")) return true;
-
-                sendMessage(sender, "Type /kalesutilities help for this");
-                sendMessage(sender, "Type /kalesutilities reload to reload the config");
-                sendMessage(sender, "Type /nickname {nickname} to change your name");
-                sendMessage(sender, "Type /realname {nickname} to get the realname of a nicked person");
-                sendMessage(sender, "Type /resetnickname to reset your nickname");
-                sendMessage(sender, "Type /weather (clear, rain) to lock the weather");
-                sendMessage(sender, "Type /time (day, night, {time}) to lock the time");
-                sendMessage(sender, "Type /sudo {player} {command} to run a command or chat as someone else");
-                sendMessage(sender, "Type /lagclear to kill all the items, tnt, ect");
-                sendMessage(sender, "Type /killall to kill all the mobs");
-            }
-
-            return true;
+            return new KalesUtilities().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("nickname") || label.equalsIgnoreCase("nick")) {
-            String[] neededArgs = new String[1];
-            neededArgs[0] = "name";
-            if (!checkConsole(sender) || !checkPermission(sender, "nickname") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            Player player = (Player) sender;
-
-            player.setDisplayName(TextStyler.noExtra(args[0]));
-            playerData.set(player.getUniqueId() + ".nickname", args[0]);
-            playerConfig.saveConfig();
-
-            sendMessage(sender, config.getString("messages.setnickname").replaceAll("%nickname%", args[0]));
-
-            return true;
+            return new Name().setNickname(sender, args, this);
         } else if (label.equalsIgnoreCase("realname") || label.equalsIgnoreCase("getname")) {
-            String[] neededArgs = new String[1];
-            neededArgs[0] = "nickname";
-            if (!checkPermission(sender, "nickname") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.getDisplayName().contains(args[0])) sendMessage(sender, config.getString("messages.realname").replaceAll("%nickname%", player.getDisplayName()).replaceAll("%name%", player.getName()));
-            }
-
-            return true;
+            return new Name().getNickname(sender, args, this);
         } else if (label.equalsIgnoreCase("resetnickname") || label.equalsIgnoreCase("resetname")) {
-            if (!checkConsole(sender) || !checkPermission(sender, "nickname")) return true;
-
-            Player player = (Player) sender;
-
-            player.setDisplayName(player.getName());
-            playerData.set(player.getUniqueId() + ".nickname", player.getName());
-            playerConfig.saveConfig();
-
-            sendMessage(sender, config.getString("messages.resetname"));
-
-            return true;
+            return new Name().resetNickname(sender, args, this);
+        } else if (label.equalsIgnoreCase("prefix")) {
+            return new Name().setPrefix(sender, args, this);
         } else if (label.equalsIgnoreCase("weather") || label.equalsIgnoreCase("setweather")) {
-            String[] neededArgs = new String[1];
-            neededArgs[0] = "weather";
-            if (!checkPermission(sender, "weather") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            if (args[0].equalsIgnoreCase("clear")) {
-                weather = WeatherType.CLEAR;
-
-                sendMessage(sender, config.getString("messages.set-weather").replaceAll("%weather%", "clear"));
-            } else if (args[0].equalsIgnoreCase("rain")) {
-                weather = WeatherType.DOWNFALL;
-
-                sendMessage(sender, config.getString("messages.set-weather").replaceAll("%weather%", "rain"));
-            } else {
-                sendMessage(sender, config.getString("messages.not-a-weather"));
-            }
-
-            return true;
+            return new Weather().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("time") || label.equalsIgnoreCase("settime")) {
-            String[] neededArgs = new String[1];
-            neededArgs[0] = "time";
-            if (!checkPermission(sender, "time") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            if (args[0].equalsIgnoreCase("day")) {
-                time = 6000;
-
-                sendMessage(sender, config.getString("messages.set-time").replaceAll("%time%", "day"));
-            } else if (args[0].equalsIgnoreCase("night")) {
-                time = 18000;
-
-                sendMessage(sender, config.getString("messages.set-time").replaceAll("%time%", "night"));
-            } else {
-                if (Long.parseLong(args[0]) > -1) {
-                    time = Long.parseLong(args[0]) ;
-
-                    sendMessage(sender, config.getString("messages.set-time").replaceAll("%time%", args[0]));
-                } else {
-                    sendMessage(sender, config.getString("messages.not-a-time"));
-                }
-            }
-
-            return true;
+            return new Time().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("sudo") || label.equalsIgnoreCase("runcommandas") || label.equalsIgnoreCase("runas")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "command/message";
-            if (!checkPermission(sender, "sudo") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            if (args[1].startsWith("/")) {
-                StringBuilder sudocommand = new StringBuilder();
-
-                int index = 0;
-                for (String string : args) {
-                    if (index != 0) sudocommand.append(string).append(" ");
-
-                    index++;
-                }
-
-                if (args[0].equalsIgnoreCase("*") || args[0].equalsIgnoreCase("@a")) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        Bukkit.getServer().dispatchCommand(player, sudocommand.substring(1));
-                    }
-                } else {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getPlayer(args[0]), sudocommand.substring(1));
-                }
-
-                sendMessage(sender, config.getString("messages.sudo-command").replaceAll("%command%", sudocommand.toString()).replaceAll("%player%", args[0]));
-            } else {
-                StringBuilder sudomessage = new StringBuilder();
-
-                int index = 0;
-                for (String string : args) {
-                    if (index != 0) sudomessage.append(string).append(" ");
-
-                    index++;
-                }
-
-                if (args[0].equalsIgnoreCase("*") || args[0].equalsIgnoreCase("@a")) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.sendMessage(sudomessage.toString());
-                    }
-                } else {
-                    Bukkit.getPlayer(args[0]).sendMessage(sudomessage.toString());
-                }
-
-                sendMessage(sender, config.getString("messages.sudo-message").replaceAll("%message%", sudomessage.toString()).replaceAll("%player%", args[0]));
-            }
-
-            return true;
+            return new Sudo().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("kick")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "reason";
-            if (!checkPermission(sender, "admin.kick") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            StringBuilder reason = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) reason.append(string).append(" ");
-
-                index++;
-            }
-
-            Bukkit.getPlayer(args[0]).kickPlayer(TextStyler.noPrefix(config.getString("messages.kick-message").replaceAll("%reason%", reason.toString()), config));
-
-            return true;
+            return new Kick().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("mute")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "reason";
-            if (!checkPermission(sender, "admin.mute") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            Player player = Bukkit.getPlayer(args[0]);
-
-            StringBuilder reason = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) reason.append(string).append(" ");
-
-                index++;
-            }
-
-            playerData.set(player.getUniqueId() + ".mute.muted", true);
-            playerData.set(player.getUniqueId() + ".mute.reason", reason.toString());
-            playerConfig.saveConfig();
-
-            sendMessage(Bukkit.getPlayer(args[0]), TextStyler.noPrefix(config.getString("messages.mute-message").replaceAll("%reason%", reason.toString()), config));
-
-            return true;
+            return new Mute().mute(sender, args, this);
         } else if (label.equalsIgnoreCase("unmute")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "reason";
-            if (!checkPermission(sender, "admin.mute") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-
-            StringBuilder reason = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) reason.append(string).append(" ");
-
-                index++;
-            }
-
-            playerData.set(player.getUniqueId() + ".mute.muted", false);
-            playerData.set(player.getUniqueId() + ".mute.reason", "");
-            playerConfig.saveConfig();
-
-            sendMessage(Bukkit.getPlayer(args[0]), TextStyler.noPrefix(config.getString("messages.unmute-message").replaceAll("%reason%", reason.toString()), config));
-
-            return true;
-        } else if (label.equalsIgnoreCase("ban")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "reason";
-            if (!checkPermission(sender, "admin.ban") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            Player player = Bukkit.getPlayer(args[0]);
-
-            StringBuilder reason = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) reason.append(string).append(" ");
-
-                index++;
-            }
-
-            playerData.set(player.getUniqueId() + ".ban.banned", true);
-            playerData.set(player.getUniqueId() + ".ban.reason", reason.toString());
-            playerConfig.saveConfig();
-
-            Bukkit.getPlayer(args[0]).kickPlayer(TextStyler.noPrefix(config.getString("messages.ban-message").replaceAll("%reason%", reason.toString()), config));
-
-            return true;
-        } else if (label.equalsIgnoreCase("unban")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "reason";
-            if (!checkPermission(sender, "admin.ban") || !checkForParameters(sender, neededArgs, args)) return true;
-
-            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-
-            /*StringBuilder reason = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) reason.append(string).append(" ");
-
-                index++;
-            }*/
-
-            playerData.set(player.getUniqueId() + ".ban.banned", false);
-            playerData.set(player.getUniqueId() + ".ban.reason", "");
-            playerConfig.saveConfig();
-
-            return true;
+            return new Mute().unMute(sender, args, this);
         } else if (label.equalsIgnoreCase("mutechat")) {
-            if (!checkPermission(sender, "admin.mutechat")) return true;
-
-            if (!serverData.getBoolean("chatmuted")) {
-                serverData.set("chatmuted", true);
-                serverConfig.saveConfig();
-
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-
-                    sendMessage(sender, config.getString("messages.mute-chat").replaceAll("%player%",  player.getDisplayName()));
-                } else {
-                    sendMessage(sender, config.getString("messages.mute-chat").replaceAll("%player%",  "console"));
-                }
-            } else {
-                serverData.set("chatmuted", false);
-                serverConfig.saveConfig();
-
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-
-                    sendMessage(sender, config.getString("messages.unmute-chat").replaceAll("%player%",  player.getDisplayName()));
-                } else {
-                    sendMessage(sender, config.getString("messages.unmute-chat").replaceAll("%player%",  "console"));
-                }
-            }
-
-            return true;
+            return new Mute().muteChat(sender, args, this);
+        } else if (label.equalsIgnoreCase("ban")) {
+            return new Ban().unBan(sender, args, this);
+        } else if (label.equalsIgnoreCase("unban")) {
+            return new Ban().ban(sender, args, this);
         } else if (label.equalsIgnoreCase("lagclear") || label.equalsIgnoreCase("clearlag")) {
-            if (!checkConsole(sender) || !checkPermission(sender, "lagclear")) return true;
-
-            Player player = (Player) sender;
-
-            String previos = player.getWorld().getGameRuleValue("sendCommandFeedback");
-            player.getWorld().setGameRuleValue("sendCommandFeedback","false");
-
-            String[] theArgs = new String[2];
-            theArgs[0] = sender.getName();
-            theArgs[1] = "/execute as @e[type=minecraft:item,limit=1] kill @e[type=minecraft:item]";
-            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
-            theArgs[1] = "/execute as @e[type=minecraft:tnt,limit=1] run kill @e[type=minecraft:tnt]";
-            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
-            theArgs[1] = "/execute as @e[type=minecraft:experience_orb,limit=1] run kill @e[type=minecraft:experience_orb]";
-            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
-
-            player.getWorld().setGameRuleValue("sendCommandFeedback", previos);
-
-            sendMessage(sender, config.getString("messages.lagclear"));
-
-            return true;
+            return new Lagclear().lagClear(sender, command, args, this);
         } else if (label.equalsIgnoreCase("killall") || label.equalsIgnoreCase("butcher")) {
-            if (!checkConsole(sender) || !checkPermission(sender, "lagclear")) return true;
-
-            Player player = (Player) sender;
-
-            String previos = player.getWorld().getGameRuleValue("sendCommandFeedback");
-            player.getWorld().setGameRuleValue("sendCommandFeedback","false");
-
-            String[] theArgs = new String[2];
-            theArgs[0] = sender.getName();
-            theArgs[1] = "/execute as @e[type=!minecraft:player,limit=1] run kill @e[type=!minecraft:player]";
-            plugin.onCommand(Bukkit.getConsoleSender(), command, "sudo", theArgs);
-
-            player.getWorld().setGameRuleValue("sendCommandFeedback", previos);
-
-            sendMessage(sender, config.getString("messages.killall"));
-
-            return true;
+            return new Lagclear().killAll(sender, command, args, this);
         } else if (label.equalsIgnoreCase("message") || label.equalsIgnoreCase("msg")) {
-            String[] neededArgs = new String[2];
-            neededArgs[0] = "player";
-            neededArgs[1] = "message";
-            if (!checkConsole(sender) || !checkForParameters(sender, neededArgs, args)) return true;
-
-            Player player = (Player) sender;
-
-            StringBuilder message = new StringBuilder();
-
-            int index = 0;
-            for (String string : args) {
-                if (index != 0) message.append(string).append(" ");
-
-                index++;
-            }
-
-            Bukkit.getPlayer(args[0]).sendMessage(TextStyler.noPrefix(config.getString("messages.dirrectmessage").replaceAll("%player%", player.getDisplayName()).replaceAll("%message%", message.toString()), config));
-
-            return true;
+            return new Message().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("setworldspawn") || label.equalsIgnoreCase("setspawn")) {
-            String[] neededArgs = new String[1];
-            neededArgs[0] = "location";
-            if (!checkForParameters(sender, neededArgs, args)) return true;
-
-            if (args[0].equalsIgnoreCase("here")) {
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-
-                    serverData.set("spawnLocation.world", player.getLocation().getWorld().getName());
-                    serverData.set("spawnLocation.x", player.getLocation().getX());
-                    serverData.set("spawnLocation.y", player.getLocation().getY());
-                    serverData.set("spawnLocation.z", player.getLocation().getZ());
-                    serverData.set("spawnLocation.rotation", player.getLocation().getYaw());
-                    serverConfig.saveConfig();
-                } else {
-                    sendMessage(sender, config.getString("messages.setspawn.noconsole"));
-                }
-            } else {
-                if (!args[0].equalsIgnoreCase("~")) serverData.set("spawnLocation.world", args[0]);
-                if (!args[1].equalsIgnoreCase("~")) serverData.set("spawnLocation.x", Double.valueOf(args[1]));
-                if (!args[2].equalsIgnoreCase("~")) serverData.set("spawnLocation.y", Double.valueOf(args[2]));
-                if (!args[3].equalsIgnoreCase("~")) serverData.set("spawnLocation.z", Double.valueOf(args[3]));
-                if (!args[4].equalsIgnoreCase("~")) serverData.set("spawnLocation.rotation", Double.valueOf(args[4]));
-                serverConfig.saveConfig();
-
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-
-                    if (args[0].equalsIgnoreCase("~")) serverData.set("spawnLocation.world", player.getLocation().getWorld().getName());
-                    if (args[1].equalsIgnoreCase("~")) serverData.set("spawnLocation.x", player.getLocation().getX());
-                    if (args[2].equalsIgnoreCase("~")) serverData.set("spawnLocation.y", player.getLocation().getY());
-                    if (args[3].equalsIgnoreCase("~")) serverData.set("spawnLocation.z", player.getLocation().getZ());
-                    if (args[4].equalsIgnoreCase("~")) serverData.set("spawnLocation.rotation", player.getLocation().getYaw());
-                    serverConfig.saveConfig();
-                } else {
-                    if (args[0].equalsIgnoreCase("~") || args[1].equalsIgnoreCase("~") || args[2].equalsIgnoreCase("~") || args[3].equalsIgnoreCase("~") || args[4].equalsIgnoreCase("~")) sendMessage(sender, config.getString("messages.setspawn.noconsole"));
-                }
-            }
-
-            return true;
+            return new Spawn().set(sender, args, this);
         } else if (label.equalsIgnoreCase("spawn")) {
-            if (!checkConsole(sender)) return true;
-
-            Player player = (Player) sender;
-
-            player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
+            return new Spawn().goTo(sender, args, this);
         }
 
         return false;
@@ -484,21 +101,63 @@ public class CommandRegister {
         }, 0, 20);
     }
 
-    public void registerCommands() {
-        List<String> subcommands = new ArrayList<>();
-        subcommands.add("help");
-        subcommands.add("reload");
-        plugin.getCommand("kalesutilities").setTabCompleter(new AutoCompleter(subcommands));
+    public void registerPermissions() {
+        Map<String, Boolean> children = new HashMap<>();
 
-        subcommands.clear();
-        subcommands.add("clear");
-        subcommands.add("rain");
-        plugin.getCommand("weather").setTabCompleter(new AutoCompleter(subcommands));
+        children.put("kalesutilities.help", true);
+        children.put("kalesutilities.reload", true);
+        children.put("kalesutilities.spawn", true);
+        children.put("kalesutilities.admin", true);
+        children.put("kalesutilities.name", true);
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.*", PermissionDefault.OP, children));
 
-        subcommands.clear();
-        subcommands.add("day");
-        subcommands.add("night");
-        plugin.getCommand("time").setTabCompleter(new AutoCompleter(subcommands));
+
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.help", PermissionDefault.TRUE));
+
+
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.reload"));
+
+
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.spawn", PermissionDefault.TRUE));
+
+
+        children.clear();
+        children.put("kalesutilities.admin.moderation", true);
+        children.put("kalesutilities.admin.world", true);
+        children.put("kalesutilities.admin.sudo", true);
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin", children));
+
+        children.clear();
+        children.put("kalesutilities.admin.moderation.kick", true);
+        children.put("kalesutilities.admin.moderation.mute", true);
+        children.put("kalesutilities.admin.moderation.ban", true);
+        children.put("kalesutilities.admin.moderation.mutechat", true);
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.moderation", children));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.moderation.kick"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.moderation.mute"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.moderation.ban"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.moderation.mutechat"));
+
+        children.clear();
+        children.put("kalesutilities.admin.world.weather", true);
+        children.put("kalesutilities.admin.world.time", true);
+        children.put("kalesutilities.admin.world.lagclear", true);
+        children.put("kalesutilities.admin.world.setspawn", true);
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world", children));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world.weather"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world.time"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world.lagclear"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world.setspawn"));
+
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.sudo"));
+
+
+        children.clear();
+        children.put("kalesutilities.name.nickname", true);
+        children.put("kalesutilities.name.prefix", true);
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.name", children));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.name.nickname"));
+        Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.name.prefix"));
     }
 
     public Boolean checkForParameters(CommandSender sender, String[] neededArgs, String[] args) {

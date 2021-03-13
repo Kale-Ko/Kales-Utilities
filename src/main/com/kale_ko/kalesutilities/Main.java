@@ -1,7 +1,6 @@
 package com.kale_ko.kalesutilities;
 
 import com.kale_ko.api.spigot.DataManager;
-import com.kale_ko.api.spigot.TextStyler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,7 +11,6 @@ public class Main extends JavaPlugin {
     public FileConfiguration playerData;
     public DataManager serverConfig = new DataManager("data.yml", this);
     public FileConfiguration serverData;
-
     public CommandRegister commandRegister = new CommandRegister(this);
 
     @Override
@@ -24,9 +22,8 @@ public class Main extends JavaPlugin {
         playerData = playerConfig.getConfig();
         serverData = serverConfig.getConfig();
 
-        commandRegister.registerCommands();
+        commandRegister.registerPermissions();
         commandRegister.registerTickEvent();
-
         this.getServer().getPluginManager().registerEvents(new EventManager(this), this);
 
         log("Enabled");
@@ -46,10 +43,6 @@ public class Main extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
         return commandRegister.execute(sender, command, label, args);
-    }
-
-    public void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(TextStyler.style(message, config));
     }
 
     public void log(String message) {

@@ -8,20 +8,16 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 @SuppressWarnings({ "deprecation" })
 public class EventManager implements Listener {
     private final Main plugin;
-
     private int taskId;
 
     public EventManager(Main plugin) {
@@ -44,15 +40,17 @@ public class EventManager implements Listener {
 
         if ((plugin.playerData.getString(player.getUniqueId() + ".nickname") != null)) player.setDisplayName(plugin.playerData.getString(player.getUniqueId() + ".nickname"));
 
+        if ((plugin.playerData.getString(player.getUniqueId() + ".prefix") == null)) plugin.playerData.set(player.getUniqueId() + ".prefix", "&l[Default]");
+
         if (plugin.config.getBoolean("scoreboard.enabled")) startTask(player);
 
         if (plugin.config.getBoolean("spawn-enabled")) player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
 
         if (plugin.config.getBoolean("double-jump.enabled")) player.setAllowFlight(true);
 
-        if (plugin.config.getBoolean("custom-join-leave-messages")) event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
+        if (plugin.config.getBoolean("custom-join-leave-messages")) event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", plugin.playerData.getString(player.getUniqueId() + ".prefix") + " " + player.getDisplayName()), plugin.config));
 
-        if (plugin.config.getBoolean("welcome-message-enabled")) plugin.sendMessage(player, TextStyler.noPrefix(plugin.config.getString("messages.welcome-message"), plugin.config));
+        if (plugin.config.getBoolean("welcome-message-enabled")) plugin.commandRegister.sendMessage(player, TextStyler.noPrefix(plugin.config.getString("messages.welcome-message"), plugin.config));
     }
 
     @EventHandler
@@ -65,7 +63,7 @@ public class EventManager implements Listener {
         }
 
         if (!plugin.playerData.getBoolean(player.getUniqueId() + ".ban.banned")) {
-            if (plugin.config.getBoolean("custom-join-leave-messages")) event.setQuitMessage(TextStyler.noPrefix(plugin.config.getString("messages.leave-message").replaceAll("%player%", player.getDisplayName()), plugin.config));
+            if (plugin.config.getBoolean("custom-join-leave-messages")) event.setQuitMessage(TextStyler.noPrefix(plugin.config.getString("messages.leave-message").replaceAll("%player%", plugin.playerData.getString(player.getUniqueId() + ".prefix") + " " + player.getDisplayName()), plugin.config));
         } else {
             event.setQuitMessage("");
         }
@@ -75,15 +73,15 @@ public class EventManager implements Listener {
     public void onPlayerChat(PlayerChatEvent event) {
         if (!plugin.serverData.getBoolean("chatmuted")) {
             if (plugin.playerData.getBoolean(event.getPlayer().getUniqueId() + ".mute.muted")) {
-                plugin.sendMessage(event.getPlayer(), plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")));
+                plugin.commandRegister.sendMessage(event.getPlayer(), plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")));
                 event.setCancelled(true);
             } else {
-                event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+                event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".prefix") + " " + event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
             }
         } else {
             if (!plugin.commandRegister.checkPermission(event.getPlayer(), "admin.mutechat")) return;
 
-            plugin.sendMessage(event.getPlayer(), plugin.config.getString("messages.chatmuted"));
+            plugin.commandRegister.sendMessage(event.getPlayer(), plugin.config.getString("messages.chatmuted"));
             event.setCancelled(true);
         }
     }
@@ -113,7 +111,15 @@ public class EventManager implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE || event.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
 
         event.setCancelled(true);
-        event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply (plugin.config.getDouble("double-jump.velocity-multiplayer")).setY(plugin.config.getDouble("double-jump.y-velocity")));
+        event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply(plugin.config.getDouble("double-jump.velocity-multiplayer")).setY(Math.max(-3, Math.min(3, event.getPlayer().getVelocity().getY() + plugin.config.getDouble("double-jump.y-velocity")))));
+    }
+
+    @EventHandler
+    public void SignChangeEvent(SignChangeEvent event) {
+        event.setLine(0, TextStyler.noPrefix(event.getLine(0), plugin.config));
+        event.setLine(1, TextStyler.noPrefix(event.getLine(1), plugin.config));
+        event.setLine(2, TextStyler.noPrefix(event.getLine(2), plugin.config));
+        event.setLine(3, TextStyler.noPrefix(event.getLine(3), plugin.config));
     }
 
     public void startTask(Player player) {
@@ -124,29 +130,8 @@ public class EventManager implements Listener {
             public void run() {
                 if (!task.hasId()) task.setId(taskId);
 
-                if (plugin.config.getBoolean("scoreboard.enabled")) createScoreBoard(player);
+                if (plugin.config.getBoolean("scoreboard.enabled")) com.kale_ko.kalesutilities.Scoreboard.updateScoreBoard(player, plugin);
             }
         }, 0, 20);
-    }
-
-    public void createScoreBoard(Player player) {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        org.bukkit.scoreboard.Scoreboard board = manager.getNewScoreboard();
-
-        Objective objective = board.registerNewObjective("customboard" + player.getName(), "dummy");
-
-        objective.setDisplayName(TextStyler.noPrefix(plugin.config.getString("scoreboard.title"), plugin.config));
-
-        int index = 0;
-        for (String line : plugin.config.getStringList("scoreboard.values")) {
-            Score newline = objective.getScore(TextStyler.noPrefix(TextStyler.replacePlaceholders(line, player, plugin.playerData), plugin.config));
-            newline.setScore(plugin.config.getStringList("scoreboard.values").size() - index);
-            index++;
-
-            if (index == plugin.config.getStringList("scoreboard.values").size()) {
-                objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                player.setScoreboard(board);
-            }
-        }
     }
 }

@@ -8,11 +8,13 @@ author: "Kale Ko"
 website: "https://kaleko.ga/"
 
 api-version: 1.16
+depend: []
+softdepend: []
 load: POSTWORLD
 
 commands:
     kalesutilities:
-        description: "The main plugin commands"
+        description: "Base plugin commands"
         usage: "/kalesutilities (help, reload)"
 
     nickname:
@@ -29,6 +31,10 @@ commands:
         description: "reset your nickname"
         usage: "/resetnickname"
         aliases: ["resetname"]
+
+    prefix:
+        description: "Change your prefix"
+        usage: "/prefix {prefix}"
 
     weather:
         description: "Lock the weather"
@@ -49,14 +55,6 @@ commands:
         description: "Kicks a player"
         usage: "/kick {player} {reason}"
 
-    ban:
-        description: "Bans a player"
-        usage: "/ban {player} {reason}"
-
-    unban:
-        description: "Unbans a player"
-        usage: "/unban {player} {reason}"
-
     mute:
         description: "Mutes a player"
         usage: "/mute {player} {reason}"
@@ -68,6 +66,14 @@ commands:
     mutechat:
         description: "Mutes the chat"
         usage: "/mutechat"
+
+    ban:
+        description: "Bans a player"
+        usage: "/ban {player} {reason}"
+
+    unban:
+        description: "Unbans a player"
+        usage: "/unban {player} {reason}"
 
     lagclear:
         description: "Kills all items, tnt, ect"
@@ -88,66 +94,3 @@ commands:
         description: "Set the spawnpoint when someone joins the game"
         usage: "/setworldspawn (~, {world}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation})"
         aliases: ["setspawn"]
-
-permissions:
-    kalesutilities:
-        description: "Allows you to use all the commands"
-        default: op
-        children:
-            kalesutilities.nickname: true
-            kalesutilities.admin: true
-            kalesutilities.weather: true
-            kalesutilities.time: true
-            kalesutilities.sudo: true
-            kalesutilites.killall: true
-            kalesutilites.setspawn: true
-
-    kalesutilities.help:
-        description: "Allows you to use the /kalesutilities help command"
-
-    kalesutilities.reload:
-        description: "Allows you to use the /kalesutilities reload command"
-
-    kalesutilities.nickname:
-        description: "Allows you to use the /nickname command"
-        default: true
-
-    kalesutilities.weather:
-        description: "Allows you to use the /weather command"
-
-    kalesutilities.time:
-        description: "Allows you to use the /time command"
-
-    kalesutilities.sudo:
-        description: "Allows you to use the /time command"
-
-    kaleutilites.killall:
-        description: "Allows you to use the /killall command"
-        children:
-            kalesutilites.lagclear: true
-
-    kalesutilites.lagclear:
-        description: "Allows you to use the /lagclear command"
-
-    kalesutilites.setspawn:
-        description: "Set the spawnpoint when someone joins the game"
-
-    kalesutilities.admin:
-        description: "Allows you to use all the admin commands"
-        children:
-            kalesutilities.admin.kick: true
-            kalesutilities.admin.ban: true
-            kalesutilities.admin.mute: true
-            kaleutilities.admin.mutechat: true
-
-    kalesutilities.admin.kick:
-        description: "Allows you to use the /kick command"
-
-    kalesutilities.admin.ban:
-        description: "Allows you to use the /ban command"
-
-    kalesutilities.admin.mute:
-        description: "Allows you to use the /mute command"
-
-    kaleutilities.admin.mutechat:
-        description: "Allows you to mute the chat"

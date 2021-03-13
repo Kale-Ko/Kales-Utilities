@@ -20,7 +20,7 @@ public class TextStyler {
 
     public static String replacePlaceholders(String text, Player player, FileConfiguration playerData) {
         return text
-        .replaceAll("%player%", player.getDisplayName())
+        .replaceAll("%player%", playerData.getString(player.getUniqueId() + ".prefix") + " " + player.getDisplayName())
         .replaceAll("%online%", Integer.toString(Bukkit.getOnlinePlayers().size()))
         .replaceAll("%max%", Integer.toString(Bukkit.getMaxPlayers()))
         .replaceAll("%joins%", Integer.toString(playerData.getInt(player.getUniqueId() + ".joins")));

@@ -6,6 +6,8 @@ default-message-color: "&7"
 custom-join-leave-messages: true
 welcome-message-enabled: true
 
+#global-plugin-directory: ""
+
 scoreboard:
     enabled: true
     title: "&6&lKale Ko &7(%online%/%max%)"
@@ -32,13 +34,14 @@ spawn-enabled: true
 double-jump:
     enabled: true
     velocity-multiplayer: 2
-    y-velocity: 1
+    y-velocity: 1.2
 
 messages:
     welcome-message: "Welcome to my server!"
     join-message: "&e%player% &7joined the game"
     leave-message: "&e%player% &7left the game"
     setnickname: "Successfully set you nickname to %nickname%"
+    setprefix: "Successfully set you prefix to %prefix%"
     realname: "%nickname%'s&r&7 real name is %name%"
     resetname: "Successfully reset you nickname"
     set-weather: "Successfully set the weather to %weather%"
