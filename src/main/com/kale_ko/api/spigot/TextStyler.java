@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class TextStyler {
     public static String style(String text, FileConfiguration config) {
-        return ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " &r" + config.getString("default-message-color") + replacePlaceholders(text));
+        return ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " &r" +config.getString("default-message-color") + replacePlaceholders(text));
     }
 
     public static String noPrefix(String text, FileConfiguration config) {

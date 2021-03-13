@@ -22,6 +22,7 @@ public class Main extends JavaPlugin {
         playerData = playerConfig.getConfig();
         serverData = serverConfig.getConfig();
 
+        log("Loading permissions");
         commandRegister.registerPermissions();
         commandRegister.registerTickEvent();
         this.getServer().getPluginManager().registerEvents(new EventManager(this), this);

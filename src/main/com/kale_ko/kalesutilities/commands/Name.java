@@ -75,7 +75,7 @@ public class Name {
         plugin.playerData.set(player.getUniqueId() + ".prefix", args[0]);
         plugin.playerConfig.saveConfig();
 
-        commandRegister.sendMessage(sender, plugin.config.getString("name.prefix").replaceAll("%prefix%", args[0]));
+        commandRegister.sendMessage(sender, plugin.config.getString("messages.setprefix").replaceAll("%prefix%", args[0]));
 
         return true;
     }
