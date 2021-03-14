@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
+import java.io.File;
+
 @SuppressWarnings({ "deprecation" })
 public class EventManager implements Listener {
     private final Main plugin;
@@ -87,7 +89,7 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void onServerping(ServerListPingEvent event) {
+    public void onServerping(ServerListPingEvent event) throws Exception {
         StringBuilder line1 = new StringBuilder(plugin.config.getString("motd.line1"));
         StringBuilder line2 = new StringBuilder(plugin.config.getString("motd.line2"));
 
@@ -103,7 +105,7 @@ public class EventManager implements Listener {
 
         event.setMotd(TextStyler.noExtra(line1.toString() + "\n&r" + line2.toString()));
 
-        //event.setServerIcon(icon);
+        event.setServerIcon(Bukkit.loadServerIcon(new File("plugins\\KalesUtilities\\" + plugin.config.getString("server-icon"))));
     }
 
     @EventHandler
