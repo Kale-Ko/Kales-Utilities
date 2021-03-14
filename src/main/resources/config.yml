@@ -29,6 +29,8 @@ motd:
     line2: "&7https://kaleko.ga/"
     centered: true
 
+server-icon: "icon.png"
+
 spawn-enabled: true
 
 double-jump:
