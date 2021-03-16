@@ -21,9 +21,11 @@ public class Main extends JavaPlugin {
         config = this.getConfig();
         playerData = playerConfig.getConfig();
         serverData = serverConfig.getConfig();
+        this.saveResource( "icon.png", false);
 
         log("Loading permissions");
         commandRegister.registerPermissions();
+
         commandRegister.registerTickEvent();
         this.getServer().getPluginManager().registerEvents(new EventManager(this), this);
 

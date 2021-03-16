@@ -9,12 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldSaveEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import java.io.File;
 
 @SuppressWarnings({ "deprecation" })
@@ -46,8 +46,6 @@ public class EventManager implements Listener {
 
         if (plugin.config.getBoolean("scoreboard.enabled")) startTask(player);
 
-        if (plugin.config.getBoolean("spawn-enabled")) player.teleport(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
-
         if (plugin.config.getBoolean("double-jump.enabled")) player.setAllowFlight(true);
 
         if (plugin.config.getBoolean("custom-join-leave-messages")) event.setJoinMessage(TextStyler.noPrefix(plugin.config.getString("messages.join-message").replaceAll("%player%", plugin.playerData.getString(player.getUniqueId() + ".prefix") + " " + player.getDisplayName()), plugin.config));
@@ -69,6 +67,11 @@ public class EventManager implements Listener {
         } else {
             event.setQuitMessage("");
         }
+    }
+
+    @EventHandler
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        if (plugin.config.getBoolean("spawn-enabled")) event.setSpawnLocation(new Location(Bukkit.getWorld(plugin.serverData.getString("spawnLocation.world")), plugin.serverData.getDouble("spawnLocation.x"), plugin.serverData.getDouble("spawnLocation.y"), plugin.serverData.getDouble("spawnLocation.z"), (float) plugin.serverData.getDouble("spawnLocation.rotation"), 0F));
     }
 
     @EventHandler
@@ -117,11 +120,33 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        event.getWorld().setGameRuleValue("doDaylightCycle", "false");
+        event.getWorld().setGameRuleValue("doWeatherCycle", "false");
+    }
+
+    @EventHandler
+    public void onWorldSave(WorldSaveEvent event) {
+        event.getWorld().setGameRuleValue("doDaylightCycle", "false");
+        event.getWorld().setGameRuleValue("doWeatherCycle", "false");
+    }
+
+    @EventHandler
     public void SignChangeEvent(SignChangeEvent event) {
         event.setLine(0, TextStyler.noPrefix(event.getLine(0), plugin.config));
         event.setLine(1, TextStyler.noPrefix(event.getLine(1), plugin.config));
         event.setLine(2, TextStyler.noPrefix(event.getLine(2), plugin.config));
         event.setLine(3, TextStyler.noPrefix(event.getLine(3), plugin.config));
+    }
+
+    @EventHandler
+    public void onVehicleExit(VehicleExitEvent event) {
+        event.getVehicle().remove();
+    }
+
+    @EventHandler
+    public void onPlayerItemDamage(PlayerItemDamageEvent event) {
+        event.setCancelled(true);
     }
 
     public void startTask(Player player) {

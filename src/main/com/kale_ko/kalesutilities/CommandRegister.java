@@ -94,9 +94,6 @@ public class CommandRegister {
                 for (Player player : world.getPlayers()) {
                     player.setPlayerWeather(weather);
                 }
-
-                world.setGameRuleValue("doDaylightCycle", "false");
-                world.setGameRuleValue("doWeatherCycle", "false");
             }
         }, 0, 20);
     }
