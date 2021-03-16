@@ -15,6 +15,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        log("Loading config");
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
