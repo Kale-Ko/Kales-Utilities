@@ -57,6 +57,7 @@
                     <include>config.yml</include>
                     <include>players.yml</include>
                     <include>data.yml</include>
+                    <include>icon.png</include>
                 </includes>
             </resource>
         </resources>
