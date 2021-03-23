@@ -5,9 +5,12 @@ import com.kale_ko.api.spigot.TextStyler;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.command.defaults.HelpCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -15,6 +18,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+
 import java.io.File;
 
 @SuppressWarnings({ "deprecation" })
@@ -137,6 +141,30 @@ public class EventManager implements Listener {
         event.setLine(1, TextStyler.noPrefix(event.getLine(1), plugin.config));
         event.setLine(2, TextStyler.noPrefix(event.getLine(2), plugin.config));
         event.setLine(3, TextStyler.noPrefix(event.getLine(3), plugin.config));
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event){
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getType() != Material.AIR) {
+            for (String location : plugin.serverData.getStringList("command-signs")) {
+                String command = location.split(",")[0];
+
+                plugin.log(location);
+                plugin.log(command);
+
+                if (location.equalsIgnoreCase( event.getClickedBlock().getX() + "," + event.getClickedBlock().getY() + "," + event.getClickedBlock().getZ() + "," + command)) {
+                    plugin.log("Correct spot");
+
+                    String[] theArgs = new String[2];
+                    theArgs[0] = event.getPlayer().getName();
+                    theArgs[1] = "/" + command;
+
+                    plugin.log(theArgs[1]);
+
+                    plugin.onCommand(Bukkit.getConsoleSender(), new HelpCommand(), "sudo", theArgs);
+                }
+            }
+        }
     }
 
     @EventHandler
