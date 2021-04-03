@@ -6,22 +6,23 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
-    public FileConfiguration config;
+    public FileConfiguration config, playerData, serverData;
     public DataManager playerConfig = new DataManager("players.yml", this);
-    public FileConfiguration playerData;
     public DataManager serverConfig = new DataManager("data.yml", this);
-    public FileConfiguration serverData;
     public CommandRegister commandRegister = new CommandRegister(this);
 
     @Override
     public void onEnable() {
         log("Loading config");
+
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
+
         config = this.getConfig();
         playerData = playerConfig.getConfig();
         serverData = serverConfig.getConfig();
+
         this.saveResource( "icon.png", false);
 
         log("Loading permissions");

@@ -17,11 +17,8 @@ import java.util.Map;
 
 public class CommandRegister {
     public Main plugin;
-    public FileConfiguration config;
-    public DataManager playerConfig;
-    public FileConfiguration playerData;
-    public DataManager serverConfig;
-    public FileConfiguration serverData;
+    public FileConfiguration config, playerData, serverData;
+    public DataManager playerConfig, serverConfig;
 
     public long time = 6000;
     public WeatherType weather = WeatherType.CLEAR;
@@ -108,15 +105,11 @@ public class CommandRegister {
         children.put("kalesutilities.name", true);
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.*", PermissionDefault.OP, children));
 
-
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.help", PermissionDefault.TRUE));
-
 
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.reload"));
 
-
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.spawn", PermissionDefault.TRUE));
-
 
         children.clear();
         children.put("kalesutilities.admin.moderation", true);
@@ -147,7 +140,6 @@ public class CommandRegister {
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.world.setspawn"));
 
         Bukkit.getPluginManager().addPermission(new Permission("kalesutilities.admin.sudo"));
-
 
         children.clear();
         children.put("kalesutilities.name.nickname", true);
