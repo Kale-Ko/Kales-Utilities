@@ -49,6 +49,10 @@ public class CommandRegister {
             return new Name().resetNickname(sender, args, this);
         } else if (label.equalsIgnoreCase("prefix")) {
             return new Name().setPrefix(sender, args, this);
+        } else if (label.equalsIgnoreCase("resetprefix")) {
+            return new Name().resetPrefix(sender, args, this);
+        } else if (label.equalsIgnoreCase("message") || label.equalsIgnoreCase("msg")) {
+            return new Message().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("weather") || label.equalsIgnoreCase("setweather")) {
             return new Weather().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("time") || label.equalsIgnoreCase("settime")) {
@@ -64,15 +68,13 @@ public class CommandRegister {
         } else if (label.equalsIgnoreCase("mutechat")) {
             return new Mute().muteChat(sender, args, this);
         } else if (label.equalsIgnoreCase("ban")) {
-            return new Ban().unBan(sender, args, this);
-        } else if (label.equalsIgnoreCase("unban")) {
             return new Ban().ban(sender, args, this);
+        } else if (label.equalsIgnoreCase("unban")) {
+            return new Ban().unBan(sender, args, this);
         } else if (label.equalsIgnoreCase("lagclear") || label.equalsIgnoreCase("clearlag")) {
             return new Lagclear().lagClear(sender, command, args, this);
         } else if (label.equalsIgnoreCase("killall") || label.equalsIgnoreCase("butcher")) {
             return new Lagclear().killAll(sender, command, args, this);
-        } else if (label.equalsIgnoreCase("message") || label.equalsIgnoreCase("msg")) {
-            return new Message().execute(sender, args, this);
         } else if (label.equalsIgnoreCase("setworldspawn") || label.equalsIgnoreCase("setspawn")) {
             return new Spawn().set(sender, args, this);
         } else if (label.equalsIgnoreCase("spawn")) {

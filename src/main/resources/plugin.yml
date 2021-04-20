@@ -28,13 +28,22 @@ commands:
         aliases: ["getname"]
 
     resetnickname:
-        description: "reset your nickname"
+        description: "Reset your nickname"
         usage: "/resetnickname"
         aliases: ["resetname"]
 
     prefix:
         description: "Change your prefix"
         usage: "/prefix {prefix}"
+
+    resetprefix:
+        description: "Reset your prefix"
+        usage: "/resetprefix"
+
+    message:
+         description: "Private message someone"
+        usage: "/message {player} {message}"
+        aliases: [ "msg" ]
 
     weather:
         description: "Lock the weather"
@@ -52,27 +61,27 @@ commands:
         aliases: ["runcommandas", "runas"]
 
     kick:
-        description: "Kicks a player"
+        description: "Kick a player"
         usage: "/kick {player} {reason}"
 
     mute:
-        description: "Mutes a player"
+        description: "Mute a player"
         usage: "/mute {player} {reason}"
 
     unmute:
-        description: "Unmutes a player"
+        description: "Unmute a player"
         usage: "/unmute {player} {reason}"
 
     mutechat:
-        description: "Mutes the chat"
+        description: "Mute the chat"
         usage: "/mutechat"
 
     ban:
-        description: "Bans a player"
+        description: "Ban a player"
         usage: "/ban {player} {reason}"
 
     unban:
-        description: "Unbans a player"
+        description: "Unban a player"
         usage: "/unban {player} {reason}"
 
     lagclear:
@@ -85,14 +94,9 @@ commands:
         usage: "/killall"
         aliases: ["butcher"]
 
-    message:
-        description: "Private message someone"
-        usage: "/message {player} {message}"
-        aliases: ["msg"]
-
     setworldspawn:
         description: "Set the spawnpoint when someone joins the game"
-        usage: "/setworldspawn (~, {world}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation})"
+        usage: "/setworldspawn (here, ((~, {world name}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation})))"
         aliases: ["setspawn"]
 
     spawn:

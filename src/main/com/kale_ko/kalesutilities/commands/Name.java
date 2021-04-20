@@ -68,7 +68,7 @@ public class Name {
 
         String[] neededArgs = new String[1];
         neededArgs[0] = "prefix";
-        if (!commandRegister.checkConsole(sender) || !commandRegister.checkPermission(sender, "prefix") || !commandRegister.checkForParameters(sender, neededArgs, args)) return true;
+        if (!commandRegister.checkConsole(sender) || !commandRegister.checkPermission(sender, "name.prefix") || !commandRegister.checkForParameters(sender, neededArgs, args)) return true;
 
         Player player = (Player) sender;
 
@@ -76,6 +76,23 @@ public class Name {
         plugin.playerConfig.saveConfig();
 
         commandRegister.sendMessage(sender, plugin.config.getString("messages.setprefix").replaceAll("%prefix%", args[0]));
+
+        return true;
+    }
+
+    public Boolean resetPrefix(CommandSender sender, String[] args, CommandRegister commandRegister) {
+        this.commandRegister = commandRegister;
+        this.plugin = commandRegister.plugin;
+
+        if (!commandRegister.checkConsole(sender) || !commandRegister.checkPermission(sender, "name.prefix")) return true;
+
+        Player player = (Player) sender;
+
+        player.setDisplayName(player.getName());
+        plugin.playerData.set(player.getUniqueId() + ".prefix", "&l[Default]");
+        plugin.playerConfig.saveConfig();
+
+        commandRegister.sendMessage(sender, plugin.config.getString("messages.resetprefix"));
 
         return true;
     }
