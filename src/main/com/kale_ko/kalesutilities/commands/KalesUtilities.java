@@ -23,11 +23,21 @@ public class KalesUtilities {
                 sendMessage(sender, "Type /nickname {nickname} to change your name");
                 sendMessage(sender, "Type /realname {nickname} to get the realname of a nicked person");
                 sendMessage(sender, "Type /resetnickname to reset your nickname");
+                sendMessage(sender, "Type /prefix {prefix} to change your prefix");
+                sendMessage(sender, "Type /message {user} {message} to private message someone");
                 sendMessage(sender, "Type /weather (clear, rain) to lock the weather");
                 sendMessage(sender, "Type /time (day, night, {time}) to lock the time");
                 sendMessage(sender, "Type /sudo {player} {command} to run a command or chat as someone else");
+                sendMessage(sender, "Type /kick {player, reason} to kick a player");
+                sendMessage(sender, "Type /mute {player} {reason} to mute a player");
+                sendMessage(sender, "Type /unmute {player} {reason} to unmute a player");
+                sendMessage(sender, "Type /mutechat to mute the chat");
+                sendMessage(sender, "Type /ban to ban a player");
+                sendMessage(sender, "Type /unban to unban a player");
                 sendMessage(sender, "Type /lagclear to kill all the items, tnt, ect");
                 sendMessage(sender, "Type /killall to kill all the mobs");
+                sendMessage(sender, "Type /setworldspawn (here, ((~, {world name}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation}))) to set the spawnpoint when someone joins the game");
+                sendMessage(sender, "Type /spawn to go to the spawn");
             } else if (args[0].equalsIgnoreCase("reload")) {
                 if (!checkPermission(sender, "reload")) return true;
 
@@ -54,11 +64,21 @@ public class KalesUtilities {
             sendMessage(sender, "Type /nickname {nickname} to change your name");
             sendMessage(sender, "Type /realname {nickname} to get the realname of a nicked person");
             sendMessage(sender, "Type /resetnickname to reset your nickname");
+            sendMessage(sender, "Type /prefix {prefix} to change your prefix");
+            sendMessage(sender, "Type /message {user} {message} to private message someone");
             sendMessage(sender, "Type /weather (clear, rain) to lock the weather");
             sendMessage(sender, "Type /time (day, night, {time}) to lock the time");
             sendMessage(sender, "Type /sudo {player} {command} to run a command or chat as someone else");
+            sendMessage(sender, "Type /kick {player, reason} to kick a player");
+            sendMessage(sender, "Type /mute {player} {reason} to mute a player");
+            sendMessage(sender, "Type /unmute {player} {reason} to unmute a player");
+            sendMessage(sender, "Type /mutechat to mute the chat");
+            sendMessage(sender, "Type /ban to ban a player");
+            sendMessage(sender, "Type /unban to unban a player");
             sendMessage(sender, "Type /lagclear to kill all the items, tnt, ect");
             sendMessage(sender, "Type /killall to kill all the mobs");
+            sendMessage(sender, "Type /setworldspawn (here, ((~, {world name}) (~, {x}) (~, {y}) (~, {z}) (~, {rotation}))) to set the spawnpoint when someone joins the game");
+            sendMessage(sender, "Type /spawn to go to the spawn");
         }
 
         return true;
