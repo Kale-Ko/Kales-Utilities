@@ -19,8 +19,8 @@
     </developers>
     <licenses>
         <license>
-            <name>Apache-2.0 License</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>MIT License</name>
+            <url>https://kaleko.ga/license.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
