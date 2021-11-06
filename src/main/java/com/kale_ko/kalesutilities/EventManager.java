@@ -1,3 +1,10 @@
+/**
+    @license
+    MIT License
+    Copyright (c) 2021 Kale Ko
+    See https://kaleko.ga/license.txt
+*/
+
 package com.kale_ko.kalesutilities;
 
 import com.kale_ko.api.spigot.Task;
@@ -18,10 +25,8 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
-
 import java.io.File;
 
-@SuppressWarnings({ "deprecation" })
 public class EventManager implements Listener {
     private final Main plugin;
     private int taskId;
@@ -85,7 +90,9 @@ public class EventManager implements Listener {
                 plugin.commandRegister.sendMessage(event.getPlayer(), plugin.config.getString("messages.muted-message").replaceAll("%reason%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".mute.reason")));
                 event.setCancelled(true);
             } else {
-                event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format").replaceAll("%player%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".prefix") + " " + event.getPlayer().getDisplayName()).replaceAll("%message%", event.getMessage()), plugin.config));
+                event.setFormat(TextStyler.noPrefix(plugin.config.getString("message-format")
+                        .replaceAll("%player%", plugin.playerData.getString(event.getPlayer().getUniqueId() + ".prefix") + " " + event.getPlayer().getDisplayName())
+                        .replaceAll("%message%", event.getMessage()), plugin.config));
             }
         } else {
             if (!plugin.commandRegister.checkPermission(event.getPlayer(), "admin.mutechat")) return;
@@ -144,7 +151,7 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event){
+    public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getType() != Material.AIR) {
             for (String location : plugin.serverData.getStringList("command-signs")) {
                 String command = location.split(",")[0];
@@ -152,7 +159,7 @@ public class EventManager implements Listener {
                 plugin.log(location);
                 plugin.log(command);
 
-                if (location.equalsIgnoreCase( event.getClickedBlock().getX() + "," + event.getClickedBlock().getY() + "," + event.getClickedBlock().getZ() + "," + command)) {
+                if (location.equalsIgnoreCase(event.getClickedBlock().getX() + "," + event.getClickedBlock().getY() + "," + event.getClickedBlock().getZ() + "," + command)) {
                     plugin.log("Correct spot");
 
                     String[] theArgs = new String[2];

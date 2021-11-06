@@ -1,3 +1,10 @@
+/**
+    @license
+    MIT License
+    Copyright (c) 2021 Kale Ko
+    See https://kaleko.ga/license.txt
+*/
+
 package com.kale_ko.kalesutilities;
 
 import com.kale_ko.api.spigot.DataManager;
@@ -23,7 +30,7 @@ public class Main extends JavaPlugin {
         playerData = playerConfig.getConfig();
         serverData = serverConfig.getConfig();
 
-        this.saveResource( "icon.png", false);
+        this.saveResource("icon.png", false);
 
         log("Loading permissions");
         commandRegister.registerPermissions();
