@@ -1,3 +1,10 @@
+/**
+    @license
+    MIT License
+    Copyright (c) 2021 Kale Ko
+    See https://kaleko.ga/license.txt
+*/
+
 package com.kale_ko.kalesutilities;
 
 import com.kale_ko.api.spigot.DataManager;
@@ -10,7 +17,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,7 +159,9 @@ public class CommandRegister {
 
     public Boolean checkForParameters(CommandSender sender, String[] neededArgs, String[] args) {
         if (args.length < neededArgs.length) {
-            sendMessage(sender, config.getString("messages.need-parameters").replaceAll("%amount%", Integer.toString(neededArgs.length)).replaceAll("%parameters%", Arrays.toString(neededArgs)));
+            sendMessage(sender, config.getString("messages.need-parameters")
+                        .replaceAll("%amount%", Integer.toString(neededArgs.length))
+                        .replaceAll("%parameters%", Arrays.toString(neededArgs)));
 
             return false;
         } else {

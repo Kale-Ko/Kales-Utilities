@@ -1,7 +1,13 @@
+/**
+    @license
+    MIT License
+    Copyright (c) 2021 Kale Ko
+    See https://kaleko.ga/license.txt
+*/
+
 package com.kale_ko.api.spigot;
 
 import org.bukkit.Bukkit;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
