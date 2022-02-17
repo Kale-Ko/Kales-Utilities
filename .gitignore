@@ -1,8 +1,4 @@
-node_modules
-package-lock.json
-
 build
-out
 target
 
 .vscode

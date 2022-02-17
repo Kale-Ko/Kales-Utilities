@@ -1,10 +1,3 @@
-/**
-    @license
-    MIT License
-    Copyright (c) 2021 Kale Ko
-    See https://kaleko.ga/license.txt
-*/
-
 package com.kale_ko.kalesutilities;
 
 import com.kale_ko.api.spigot.DataManager;
